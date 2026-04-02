@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { createClient } from "@/lib/supabase";
 
 const countries = [
   "USA",
@@ -17,6 +19,10 @@ const countries = [
 ];
 
 export default function RegisterPage() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const router = useRouter();
+  const supabase = createClient();
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -38,10 +44,48 @@ export default function RegisterPage() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
-    console.log("Form submitted:", formData);
+    setLoading(true);
+    setError('');
+    
+    const formData = new FormData(e.target as HTMLFormElement);
+    const fullName = formData.get('fullName') as string;
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
+    const confirmPassword = formData.get('confirmPassword') as string;
+    const country = formData.get('country') as string;
+    const phone = formData.get('phone') as string;
+    
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      setLoading(false);
+      return;
+    }
+    
+    try {
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: fullName,
+            country,
+            phone
+          }
+        }
+      });
+      
+      if (error) {
+        setError(error.message);
+      } else {
+        router.push('/dashboard');
+      }
+    } catch (err) {
+      setError('An error occurred during registration');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -185,7 +229,7 @@ export default function RegisterPage() {
               <input
                 type="tel"
                 id="phoneNumber"
-                name="phoneNumber"
+                name="phone"
                 value={formData.phoneNumber}
                 onChange={handleChange}
                 required
@@ -226,12 +270,20 @@ export default function RegisterPage() {
               </label>
             </div>
 
+            {/* Error Message */}
+            {error && (
+              <div className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg text-sm">
+                {error}
+              </div>
+            )}
+
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full py-3.5 bg-[#B8960C] hover:bg-[#a6870b] text-[#050a14] font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-[#B8960C]/20 focus:outline-none focus:ring-2 focus:ring-[#B8960C] focus:ring-offset-2 focus:ring-offset-[#0a1628]"
+              disabled={loading}
+              className="w-full py-3.5 bg-[#B8960C] hover:bg-[#a6870b] disabled:opacity-50 disabled:cursor-not-allowed text-[#050a14] font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-[#B8960C]/20 focus:outline-none focus:ring-2 focus:ring-[#B8960C] focus:ring-offset-2 focus:ring-offset-[#0a1628]"
             >
-              Create Account
+              {loading ? 'Creating Account...' : 'Create Account'}
             </button>
           </form>
 
