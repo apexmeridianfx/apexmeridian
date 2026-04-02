@@ -45,13 +45,13 @@ export function Navbar() {
           {/* Desktop CTA Buttons */}
           <div className="hidden lg:flex items-center gap-4">
             <Link
-              href="#signin"
+              href="/login"
               className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               Sign In
             </Link>
             <Link
-              href="#get-started"
+              href="/register"
               className="px-5 py-2.5 bg-primary text-primary-foreground rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors"
             >
               Get Started
@@ -84,13 +84,13 @@ export function Navbar() {
               ))}
               <div className="flex flex-col gap-3 pt-4 border-t border-border">
                 <Link
-                  href="#signin"
+                  href="/login"
                   className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-2"
                 >
                   Sign In
                 </Link>
                 <Link
-                  href="#get-started"
+                  href="/register"
                   className="px-5 py-2.5 bg-primary text-primary-foreground rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors text-center"
                 >
                   Get Started
