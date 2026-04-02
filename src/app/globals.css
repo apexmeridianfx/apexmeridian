@@ -5,17 +5,19 @@
   --foreground: #f5f5f5;
   --card: #0a1628;
   --card-foreground: #f5f5f5;
-  --primary: #d4af37;
+  --primary: #B8960C;
   --primary-foreground: #050a14;
   --secondary: #1a2744;
   --secondary-foreground: #f5f5f5;
   --muted: #1a2744;
   --muted-foreground: #94a3b8;
-  --accent: #d4af37;
+  --accent: #B8960C;
   --accent-foreground: #050a14;
   --border: #1e3a5f;
-  --ring: #d4af37;
+  --ring: #B8960C;
   --radius: 0.5rem;
+  --input: #0d1f38;
+  --input-foreground: #f5f5f5;
 }
 
 @theme inline {
@@ -33,6 +35,8 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-border: var(--border);
   --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-input-foreground: var(--input-foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
