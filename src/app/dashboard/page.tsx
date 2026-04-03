@@ -41,6 +41,12 @@ export default function DashboardPage() {
   const router = useRouter()
   const supabase = createClient()
 
+  const handleSignOut = async () => {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    router.push('/login')
+  }
+
   const summaryCards = [
     {
       title: "Total Portfolio Value",
@@ -151,7 +157,10 @@ export default function DashboardPage() {
 
           {/* Sign Out */}
           <div className="border-t border-border p-4">
-            <button className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground">
+            <button 
+              onClick={handleSignOut}
+              className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+            >
               <LogOut className="h-5 w-5" />
               Sign Out
             </button>
