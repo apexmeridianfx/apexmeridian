@@ -14,6 +14,9 @@ import {
   Clock,
 } from "lucide-react"
 import Link from "next/link"
+import { createClient } from '@/lib/supabase'
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 const navItems = [
   { icon: LayoutDashboard, label: "Overview", href: "/dashboard", active: true },
@@ -23,33 +26,6 @@ const navItems = [
   { icon: User, label: "Profile", href: "/dashboard/profile", active: false },
 ]
 
-const summaryCards = [
-  {
-    title: "Total Portfolio Value",
-    value: "$0.00",
-    icon: DollarSign,
-    description: "Your total investment value",
-  },
-  {
-    title: "Forex Returns",
-    value: "$0.00",
-    icon: TrendingUp,
-    description: "Returns from forex trading",
-  },
-  {
-    title: "Real Estate Value",
-    value: "$0.00",
-    icon: Home,
-    description: "Total real estate holdings",
-  },
-  {
-    title: "Active Loans",
-    value: "$0",
-    icon: CreditCard,
-    description: "Current loan balance",
-  },
-]
-
 const quickActions = [
   { label: "Invest in Forex", href: "/dashboard/forex" },
   { label: "Invest in Real Estate", href: "/dashboard/real-estate" },
@@ -57,8 +33,89 @@ const quickActions = [
 ]
 
 export default function DashboardPage() {
-  const userName = "User Name"
-  const userEmail = "user@example.com"
+  const [user, setUser] = useState<any>(null)
+  const [profile, setProfile] = useState<any>(null)
+  const [investments, setInvestments] = useState<any[]>([])
+  const [loans, setLoans] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const router = useRouter()
+  const supabase = createClient()
+
+  const summaryCards = [
+    {
+      title: "Total Portfolio Value",
+      value: `$${investments.reduce((sum: number, inv: any) => 
+      sum + (inv.total_balance || 0), 0).toFixed(2)}`,
+      icon: DollarSign,
+      description: "Your total investment value",
+    },
+    {
+      title: "Forex Returns",
+      value: `$${investments.filter((i: any) => i.type === 'forex')
+      .reduce((sum: number, inv: any) => sum + (inv.returns || 0), 0)
+      .toFixed(2)}`,
+      icon: TrendingUp,
+      description: "Returns from forex trading",
+    },
+    {
+      title: "Real Estate Value",
+      value: `$${investments.filter((i: any) => i.type === 'real_estate')
+      .reduce((sum: number, inv: any) => 
+      sum + (inv.total_balance || 0), 0).toFixed(2)}`,
+      icon: Home,
+      description: "Total real estate holdings",
+    },
+    {
+      title: "Active Loans",
+      value: `$${loans.filter((l: any) => l.status === 'active')
+      .reduce((sum: number, l: any) => 
+      sum + (l.amount_approved || 0), 0).toFixed(2)}`,
+      icon: CreditCard,
+      description: "Current loan balance",
+    },
+  ]
+
+  useEffect(() => {
+    async function loadDashboard() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        router.push('/login')
+        return
+      }
+      setUser(user)
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single()
+      setProfile(profile)
+
+      const { data: investments } = await supabase
+        .from('investments')
+        .select('*')
+        .eq('user_id', user.id)
+      setInvestments(investments || [])
+
+      const { data: loans } = await supabase
+        .from('loans')
+        .select('*')
+        .eq('user_id', user.id)
+      setLoans(loans || [])
+
+      setLoading(false)
+    }
+    loadDashboard()
+  }, [])
+
+  if (loading) return (
+    <div className="min-h-screen bg-[#050a14] 
+    flex items-center justify-center">
+      <p className="text-gold text-xl">
+        Loading your dashboard...
+      </p>
+    </div>
+  )
 
   return (
     <div className="flex min-h-screen bg-[#050a14]">
@@ -116,7 +173,7 @@ export default function DashboardPage() {
               <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/20 text-primary">
                 <User className="h-5 w-5" />
               </div>
-              <span className="text-sm text-muted-foreground">{userEmail}</span>
+              <span className="text-sm text-muted-foreground">{profile?.full_name || user?.email}</span>
             </div>
           </div>
         </header>
@@ -126,7 +183,7 @@ export default function DashboardPage() {
           {/* Welcome Header */}
           <div className="mb-8">
             <h2 className="font-playfair text-3xl font-bold text-foreground">
-              Welcome back, <span className="text-primary">{userName}</span>
+              Welcome back, <span className="text-primary">{profile?.full_name || user?.email}</span>
             </h2>
             <p className="mt-2 text-muted-foreground">
               Here&apos;s an overview of your investment portfolio

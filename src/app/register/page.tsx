@@ -71,7 +71,7 @@ export default function RegisterPage() {
           data: {
             full_name: fullName,
             country,
-            phone
+            phone,
           }
         }
       });
@@ -79,6 +79,19 @@ export default function RegisterPage() {
       if (error) {
         setError(error.message);
       } else {
+        // Update user's profile in Supabase after successful signUp
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (user) {
+          await supabase.from('profiles').upsert({
+            id: user.id,
+            full_name: fullName,
+            phone,
+            country,
+            email,
+          });
+        }
+        
         router.push('/dashboard');
       }
     } catch (err) {
@@ -230,11 +243,9 @@ export default function RegisterPage() {
                 type="tel"
                 id="phoneNumber"
                 name="phone"
-                value={formData.phoneNumber}
-                onChange={handleChange}
                 required
                 className="w-full px-4 py-3 bg-[#050a14] border border-[#1e3a5f] rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#B8960C] focus:border-transparent transition-all"
-                placeholder="Enter your phone number"
+                placeholder="+1 234 567 8900"
               />
             </div>
 
