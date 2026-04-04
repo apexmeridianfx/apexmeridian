@@ -43,8 +43,11 @@ export default function DashboardPage() {
   }
 
   if (loading) return (
-    <div className="min-h-screen bg-[#050a14] flex items-center justify-center">
-      <p className="text-yellow-500 text-xl">Loading your dashboard...</p>
+    <div className="min-h-screen bg-[#050a14] flex flex-col items-center justify-center gap-4">
+      <div className="w-12 h-12 border-2 border-yellow-500 border-t-transparent rounded-full animate-spin" />
+      <p className="text-yellow-500 text-lg font-medium tracking-widest uppercase">
+        Your Wealth Is Working.
+      </p>
     </div>
   )
 
@@ -154,16 +157,18 @@ export default function DashboardPage() {
           {/* Quick Actions */}
           <div className="bg-[#0a1628] border border-yellow-900/30 rounded-xl p-6">
             <h3 className="text-white text-lg md:text-xl font-semibold mb-4">Quick Actions</h3>
-            <div className="flex gap-4">
+            <div className="flex flex-wrap gap-4">
               {[
                 { label: 'Invest in Forex', path: '/dashboard/forex' },
                 { label: 'Invest in Real Estate', path: '/dashboard/real-estate' },
                 { label: 'Apply for Loan', path: '/dashboard/loans' },
+                { label: 'Deposit Funds', path: '/dashboard/deposit', color: 'bg-green-600 hover:bg-green-500' },
+                { label: 'Withdraw Funds', path: '/dashboard/withdraw', color: 'bg-red-600 hover:bg-red-500' },
               ].map((action) => (
                 <button
                   key={action.label}
                   onClick={() => router.push(action.path)}
-                  className="px-6 py-3 bg-yellow-600 hover:bg-yellow-500 text-white rounded-lg text-sm font-medium transition-colors">
+                  className={`px-6 py-3 ${action.color || 'bg-yellow-600 hover:bg-yellow-500'} text-white rounded-lg text-sm font-medium transition-colors`}>
                   {action.label}
                 </button>
               ))}

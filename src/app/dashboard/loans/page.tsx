@@ -33,6 +33,15 @@ export default function LoansPage() {
     setLoading(false)
   }
 
+  if (loading) return (
+    <div className="min-h-screen bg-[#050a14] flex flex-col items-center justify-center gap-4">
+      <div className="w-12 h-12 border-2 border-yellow-500 border-t-transparent rounded-full animate-spin" />
+      <p className="text-yellow-500 text-lg font-medium tracking-widest uppercase">
+        Your Wealth Is Working.
+      </p>
+    </div>
+  )
+
   return (
     <div className="min-h-screen bg-[#050a14] flex flex-col md:flex-row">
       <div className="hidden md:flex md:w-64 bg-[#0a1628] 
