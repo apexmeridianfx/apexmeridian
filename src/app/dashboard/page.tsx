@@ -54,9 +54,10 @@ export default function DashboardPage() {
   const activeLoans = loans.filter(l => l.status === 'active').reduce((sum, l) => sum + (l.amount_approved || 0), 0)
 
   return (
-    <div className="min-h-screen bg-[#050a14] flex">
+    <div className="min-h-screen bg-[#050a14] flex flex-col md:flex-row">
       {/* Sidebar */}
-      <div className="w-64 bg-[#0a1628] border-r border-yellow-900/30 flex flex-col">
+      <div className="hidden md:flex md:w-64 bg-[#0a1628] 
+      border-r border-yellow-900/30 flex-col">
         <div className="p-6 border-b border-yellow-900/30">
           <h1 className="text-yellow-500 font-bold text-xl">Apex Meridian</h1>
         </div>
@@ -86,11 +87,23 @@ export default function DashboardPage() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 w-full flex flex-col">
+        {/* Mobile Top Bar */}
+        <div className="md:hidden bg-[#0a1628] border-b 
+        border-yellow-900/30 px-4 py-3 flex items-center 
+        justify-between">
+          <h1 className="text-yellow-500 font-bold text-lg">
+            Apex Meridian
+          </h1>
+          <button onClick={() => router.push('/dashboard')} 
+            className="text-gray-400 text-sm">
+            ← Overview
+          </button>
+        </div>
         {/* Top Bar */}
         <div className="bg-[#0a1628] border-b border-yellow-900/30 px-8 py-4 flex justify-between items-center">
           <div>
-            <h2 className="text-white text-xl font-semibold">Welcome back, {profile?.full_name || user?.email}</h2>
+            <h2 className="text-white text-xl md:text-2xl font-semibold">Welcome back, {profile?.full_name || user?.email}</h2>
             <p className="text-gray-400 text-sm">Here is your portfolio overview</p>
           </div>
           <div className="flex items-center gap-4">
@@ -99,9 +112,9 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="p-8 space-y-8">
+        <div className="p-8 space-y-8 pb-20 md:pb-0">
           {/* Stat Cards */}
-          <div className="grid grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {[
               { label: 'Total Portfolio', value: `$${totalPortfolio.toFixed(2)}`, icon: <DollarSign size={24} />, color: 'text-yellow-500' },
               { label: 'Forex Returns', value: `$${forexReturns.toFixed(2)}`, icon: <TrendingUp size={24} />, color: 'text-green-400' },
@@ -113,14 +126,14 @@ export default function DashboardPage() {
                   <p className="text-gray-400 text-sm">{stat.label}</p>
                   <span className={stat.color}>{stat.icon}</span>
                 </div>
-                <p className="text-white text-2xl font-bold">{stat.value}</p>
+                <p className="text-white text-xl md:text-2xl font-bold">{stat.value}</p>
               </div>
             ))}
           </div>
 
           {/* Recent Activity */}
           <div className="bg-[#0a1628] border border-yellow-900/30 rounded-xl p-6">
-            <h3 className="text-white font-semibold text-lg mb-4">Recent Activity</h3>
+            <h3 className="text-white text-lg md:text-xl font-semibold mb-4">Recent Activity</h3>
             {investments.length === 0 && loans.length === 0 ? (
               <p className="text-gray-400 text-center py-8">No transactions yet</p>
             ) : (
@@ -140,7 +153,7 @@ export default function DashboardPage() {
 
           {/* Quick Actions */}
           <div className="bg-[#0a1628] border border-yellow-900/30 rounded-xl p-6">
-            <h3 className="text-white font-semibold text-lg mb-4">Quick Actions</h3>
+            <h3 className="text-white text-lg md:text-xl font-semibold mb-4">Quick Actions</h3>
             <div className="flex gap-4">
               {[
                 { label: 'Invest in Forex', path: '/dashboard/forex' },
@@ -157,6 +170,41 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
+      </div>
+      {/* Mobile Bottom Navigation */}
+      <div className="md:hidden fixed bottom-0 left-0 
+      right-0 bg-[#0a1628] border-t border-yellow-900/30 
+      flex justify-around py-3 z-50">
+        <button onClick={() => router.push('/dashboard')}
+          className="flex flex-col items-center gap-1 
+          text-gray-400 hover:text-yellow-500">
+          <span className="text-lg">🏠</span>
+          <span className="text-xs">Home</span>
+        </button>
+        <button onClick={() => router.push('/dashboard/forex')}
+          className="flex flex-col items-center gap-1 
+          text-gray-400 hover:text-yellow-500">
+          <span className="text-lg">📈</span>
+          <span className="text-xs">Forex</span>
+        </button>
+        <button onClick={() => router.push('/dashboard/real-estate')}
+          className="flex flex-col items-center gap-1 
+          text-gray-400 hover:text-yellow-500">
+          <span className="text-lg">🏢</span>
+          <span className="text-xs">Property</span>
+        </button>
+        <button onClick={() => router.push('/dashboard/loans')}
+          className="flex flex-col items-center gap-1 
+          text-gray-400 hover:text-yellow-500">
+          <span className="text-lg">💳</span>
+          <span className="text-xs">Loans</span>
+        </button>
+        <button onClick={() => router.push('/dashboard/profile')}
+          className="flex flex-col items-center gap-1 
+          text-gray-400 hover:text-yellow-500">
+          <span className="text-lg">👤</span>
+          <span className="text-xs">Profile</span>
+        </button>
       </div>
     </div>
   )
