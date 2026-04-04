@@ -1,0 +1,99 @@
+"use client"
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase'
+import { CreditCard, ArrowLeft } from 'lucide-react'
+
+export default function LoansPage() {
+  const router = useRouter()
+  const supabase = createClient()
+  const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
+  const [error, setError] = useState('')
+
+  const handleApply = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
+    const form = e.currentTarget
+    const data = new FormData(form)
+    
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) { router.push('/login'); return }
+
+    const { error } = await supabase.from('loans').insert({
+      user_id: user.id,
+      amount_requested: Number(data.get('amount')),
+      purpose: data.get('purpose'),
+      status: 'pending'
+    })
+
+    if (error) { setError(error.message) }
+    else { setSuccess(true) }
+    setLoading(false)
+  }
+
+  return (
+    <div className="min-h-screen bg-[#050a14] flex">
+      <div className="w-64 bg-[#0a1628] border-r border-yellow-900/30 p-6">
+        <h1 className="text-yellow-500 font-bold text-xl mb-8">Apex Meridian</h1>
+        <button onClick={() => router.push('/dashboard')} className="flex items-center gap-2 text-gray-400 hover:text-yellow-500 text-sm">
+          <ArrowLeft size={16} /> Back to Overview
+        </button>
+      </div>
+      <div className="flex-1 p-8">
+        <div className="flex items-center gap-3 mb-8">
+          <CreditCard className="text-yellow-500" size={28} />
+          <h2 className="text-white text-2xl font-bold">Business Loans</h2>
+        </div>
+
+        {success ? (
+          <div className="bg-green-900/30 border border-green-500/30 rounded-xl p-8 text-center">
+            <p className="text-green-400 text-xl font-semibold mb-2">Application Submitted!</p>
+            <p className="text-gray-400">Your loan application is under review. We will notify you within 24-48 hours.</p>
+            <button onClick={() => setSuccess(false)} className="mt-6 px-6 py-2 bg-yellow-600 hover:bg-yellow-500 text-white rounded-lg text-sm">
+              Apply for Another
+            </button>
+          </div>
+        ) : (
+          <div className="max-w-2xl">
+            <div className="grid grid-cols-3 gap-4 mb-8">
+              {[
+                { label: 'Business Loan', range: '$5K - $500K', rate: '8.5% APR' },
+                { label: 'Personal Loan', range: '$1K - $50K', rate: '12% APR' },
+                { label: 'Real Estate Loan', range: '$50K - $2M', rate: '6.5% APR' },
+              ].map((type) => (
+                <div key={type.label} className="bg-[#0a1628] border border-yellow-900/30 rounded-xl p-4 text-center">
+                  <p className="text-yellow-500 font-semibold text-sm">{type.label}</p>
+                  <p className="text-white font-bold mt-1">{type.range}</p>
+                  <p className="text-green-400 text-sm">{type.rate}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="bg-[#0a1628] border border-yellow-900/30 rounded-xl p-8">
+              <h3 className="text-white font-semibold text-lg mb-6">Apply Now</h3>
+              {error && <p className="text-red-400 bg-red-900/20 border border-red-500/30 rounded-lg p-3 mb-4 text-sm">{error}</p>}
+              <form onSubmit={handleApply} className="space-y-4">
+                <div>
+                  <label className="text-gray-400 text-sm block mb-2">Loan Amount (USD)</label>
+                  <input name="amount" type="number" required placeholder="Enter amount"
+                    className="w-full bg-[#050a14] border border-yellow-900/30 rounded-lg px-4 py-3 text-white focus:border-yellow-500 focus:outline-none" />
+                </div>
+                <div>
+                  <label className="text-gray-400 text-sm block mb-2">Purpose of Loan</label>
+                  <textarea name="purpose" required placeholder="Describe how you will use this loan" rows={4}
+                    className="w-full bg-[#050a14] border border-yellow-900/30 rounded-lg px-4 py-3 text-white focus:border-yellow-500 focus:outline-none resize-none" />
+                </div>
+                <button type="submit" disabled={loading}
+                  className="w-full py-3 bg-yellow-600 hover:bg-yellow-500 disabled:opacity-50 text-white rounded-lg font-medium transition-colors">
+                  {loading ? 'Submitting...' : 'Submit Application'}
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
