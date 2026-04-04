@@ -83,8 +83,9 @@ export default function DashboardPage() {
 
   useEffect(() => {
     async function loadDashboard() {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
+      const { data: { user }, error } = await supabase.auth.getUser()
+
+      if (!user || error) {
         router.push('/login')
         return
       }
@@ -115,8 +116,7 @@ export default function DashboardPage() {
   }, [])
 
   if (loading) return (
-    <div className="min-h-screen bg-[#050a14] 
-    flex items-center justify-center">
+    <div className="min-h-screen bg-[#050a14] flex items-center justify-center">
       <p className="text-gold text-xl">
         Loading your dashboard...
       </p>
