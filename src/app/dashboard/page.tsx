@@ -3,7 +3,7 @@
 import { createClient } from '@/lib/supabase'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { TrendingUp, Building2, CreditCard, DollarSign, Bell, LogOut, LayoutDashboard, User } from 'lucide-react'
+import { TrendingUp, Building2, CreditCard, DollarSign, Bell, LogOut, LayoutDashboard, User, MoreHorizontal } from 'lucide-react'
 
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null)
@@ -11,6 +11,7 @@ export default function DashboardPage() {
   const [investments, setInvestments] = useState<any[]>([])
   const [loans, setLoans] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [showMobileMenu, setShowMobileMenu] = useState(false)
   const router = useRouter()
   const supabase = createClient()
 
@@ -162,8 +163,9 @@ export default function DashboardPage() {
                 { label: 'Invest in Forex', path: '/dashboard/forex' },
                 { label: 'Invest in Real Estate', path: '/dashboard/real-estate' },
                 { label: 'Apply for Loan', path: '/dashboard/loans' },
-                { label: 'Deposit Funds', path: '/dashboard/deposit', color: 'bg-green-600 hover:bg-green-500' },
-                { label: 'Withdraw Funds', path: '/dashboard/withdraw', color: 'bg-red-600 hover:bg-red-500' },
+                { label: 'Deposit Funds', path: '/dashboard/deposit', color: 'bg-green-700 hover:bg-green-600' },
+                { label: 'Withdraw Funds', path: '/dashboard/withdraw', color: 'bg-red-800 hover:bg-red-700' },
+                { label: 'Support', path: '/dashboard/support', color: 'bg-blue-800 hover:bg-blue-700' },
               ].map((action) => (
                 <button
                   key={action.label}
@@ -192,11 +194,11 @@ export default function DashboardPage() {
           <span className="text-lg">📈</span>
           <span className="text-xs">Forex</span>
         </button>
-        <button onClick={() => router.push('/dashboard/real-estate')}
+        <button onClick={() => setShowMobileMenu(!showMobileMenu)}
           className="flex flex-col items-center gap-1 
           text-gray-400 hover:text-yellow-500">
-          <span className="text-lg">🏢</span>
-          <span className="text-xs">Property</span>
+          <MoreHorizontal size={20} />
+          <span className="text-xs">More</span>
         </button>
         <button onClick={() => router.push('/dashboard/loans')}
           className="flex flex-col items-center gap-1 
@@ -207,10 +209,44 @@ export default function DashboardPage() {
         <button onClick={() => router.push('/dashboard/profile')}
           className="flex flex-col items-center gap-1 
           text-gray-400 hover:text-yellow-500">
-          <span className="text-lg">👤</span>
+          <span className="text-lg">�</span>
           <span className="text-xs">Profile</span>
         </button>
       </div>
+
+      {/* Mobile Menu Overlay */}
+      {showMobileMenu && (
+        <div className="md:hidden fixed inset-0 bg-black/50 z-40" onClick={() => setShowMobileMenu(false)}>
+          <div className="absolute bottom-20 left-4 right-4 bg-[#0a1628] border border-yellow-900/30 rounded-xl p-4" onClick={(e) => e.stopPropagation()}>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                onClick={() => { setShowMobileMenu(false); router.push('/dashboard/real-estate'); }}
+                className="flex flex-col items-center gap-2 p-3 text-gray-400 hover:text-yellow-500 rounded-lg">
+                <span className="text-lg">🏢</span>
+                <span className="text-xs">Property</span>
+              </button>
+              <button
+                onClick={() => { setShowMobileMenu(false); router.push('/dashboard/deposit'); }}
+                className="flex flex-col items-center gap-2 p-3 text-gray-400 hover:text-green-400 rounded-lg">
+                <span className="text-lg">💰</span>
+                <span className="text-xs">Deposit</span>
+              </button>
+              <button
+                onClick={() => { setShowMobileMenu(false); router.push('/dashboard/withdraw'); }}
+                className="flex flex-col items-center gap-2 p-3 text-gray-400 hover:text-red-400 rounded-lg">
+                <span className="text-lg">�</span>
+                <span className="text-xs">Withdraw</span>
+              </button>
+              <button
+                onClick={() => { setShowMobileMenu(false); router.push('/dashboard/support'); }}
+                className="flex flex-col items-center gap-2 p-3 text-gray-400 hover:text-blue-400 rounded-lg">
+                <span className="text-lg">💬</span>
+                <span className="text-xs">Support</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
