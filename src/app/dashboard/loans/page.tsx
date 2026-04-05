@@ -1,5 +1,5 @@
 "use client"
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 import { CreditCard, ArrowLeft } from 'lucide-react'
@@ -10,6 +10,24 @@ export default function LoansPage() {
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState('')
+  const [loans, setLoans] = useState<any[]>([])
+  const [loansLoading, setLoansLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadLoans() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) { router.push('/login'); return }
+      
+      const { data } = await supabase
+        .from('loans')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+      setLoans(data || [])
+      setLoansLoading(false)
+    }
+    loadLoans()
+  }, [])
 
   const handleApply = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -113,6 +131,51 @@ export default function LoansPage() {
                     {loading ? 'Submitting...' : 'Submit Application'}
                   </button>
                 </form>
+              </div>
+            </div>
+          )}
+          {/* Loan Applications */}
+          {!loansLoading && loans.length > 0 && (
+            <div className="bg-[#0a1628] border border-yellow-900/30 rounded-xl p-6">
+              <h3 className="text-white text-lg font-semibold mb-4">Your Loan Applications</h3>
+              <div className="space-y-3">
+                {loans.map((loan) => (
+                  <div key={loan.id} className="bg-[#050a14] border border-yellow-900/20 rounded-lg p-4">
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <p className="text-white font-medium">Loan Application</p>
+                        <p className="text-gray-400 text-sm">{new Date(loan.created_at).toLocaleDateString()}</p>
+                      </div>
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                        loan.status === 'pending' ? 'bg-yellow-900/30 text-yellow-400 border border-yellow-500/30' :
+                        loan.status === 'approved' ? 'bg-green-900/30 text-green-400 border border-green-500/30' :
+                        loan.status === 'rejected' ? 'bg-red-900/30 text-red-400 border border-red-500/30' :
+                        loan.status === 'active' ? 'bg-blue-900/30 text-blue-400 border border-blue-500/30' :
+                        'bg-gray-900/30 text-gray-400 border border-gray-500/30'
+                      }`}>
+                        {loan.status.charAt(0).toUpperCase() + loan.status.slice(1)}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <p className="text-gray-400">Amount Requested</p>
+                        <p className="text-white font-semibold">${loan.amount_requested?.toLocaleString()}</p>
+                      </div>
+                      {loan.amount_approved && (
+                        <div>
+                          <p className="text-gray-400">Amount Approved</p>
+                          <p className="text-green-400 font-semibold">${loan.amount_approved.toLocaleString()}</p>
+                        </div>
+                      )}
+                    </div>
+                    {loan.purpose && (
+                      <div className="mt-3 pt-3 border-t border-yellow-900/20">
+                        <p className="text-gray-400 text-sm mb-1">Purpose</p>
+                        <p className="text-gray-300 text-sm">{loan.purpose}</p>
+                      </div>
+                    )}
+                  </div>
+                ))}
               </div>
             </div>
           )}

@@ -94,7 +94,9 @@ export default function AdminPage() {
           <button className="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-yellow-500 hover:bg-yellow-600/10 rounded-lg text-sm">
             <CreditCard size={18} /> Manage Loans
           </button>
-          <button className="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-yellow-500 hover:bg-yellow-600/10 rounded-lg text-sm">
+          <button
+            onClick={() => router.push('/admin/transactions')}
+            className="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-yellow-500 hover:bg-yellow-600/10 rounded-lg text-sm">
             <Briefcase size={18} /> Transactions
           </button>
         </nav>
