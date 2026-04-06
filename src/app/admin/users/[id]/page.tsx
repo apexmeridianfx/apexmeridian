@@ -105,14 +105,14 @@ export default function ManageUserPage() {
   return (
     <div className="min-h-screen bg-[#050a14]">
       {/* Header */}
-      <div className="bg-[#0a1628] border-b border-yellow-900/30 px-8 py-4 flex items-center gap-4">
+      <div className="bg-[#0a1628] border-b border-yellow-900/30 px-8 py-4 flex flex-col md:flex-row items-start md:items-center gap-4">
         <button
           onClick={() => router.push('/admin')}
           className="flex items-center gap-2 text-gray-400 hover:text-yellow-500 transition-colors">
           <ArrowLeft size={18} /> Back to Admin
         </button>
         <div className="flex-1">
-          <h1 className="text-white text-xl font-bold">
+          <h1 className="text-white text-base md:text-xl font-bold">
             Managing: {profile?.full_name || profile?.email}
           </h1>
           <p className="text-gray-400 text-sm">{profile?.email} · {profile?.country || 'No country'} · Joined {new Date(profile?.created_at).toLocaleDateString()}</p>
@@ -124,10 +124,10 @@ export default function ManageUserPage() {
         )}
       </div>
 
-      <div className="p-8 space-y-8 max-w-5xl mx-auto">
+      <div className="p-8 space-y-8 max-w-5xl mx-auto pb-8">
 
         {/* Customer Summary */}
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
             { label: 'Total Invested', value: `$${investments.reduce((s, i) => s + (i.amount_invested || 0), 0).toLocaleString()}` },
             { label: 'Total Returns', value: `$${investments.reduce((s, i) => s + (i.returns || 0), 0).toLocaleString()}` },
@@ -145,7 +145,7 @@ export default function ManageUserPage() {
         <div className="bg-[#0a1628] border border-yellow-900/30 rounded-xl overflow-hidden">
           <div className="px-6 py-4 border-b border-yellow-900/30 flex justify-between items-center">
             <h2 className="text-white font-semibold text-lg">Investments</h2>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => addInvestment('forex')}
                 className="flex items-center gap-2 px-4 py-2 bg-yellow-600/20 hover:bg-yellow-600/30 text-yellow-500 rounded-lg text-sm transition-colors">
@@ -176,7 +176,7 @@ export default function ManageUserPage() {
                     </button>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="text-gray-400 text-xs block mb-1">Plan Name</label>
                       <input

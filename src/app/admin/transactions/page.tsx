@@ -67,7 +67,7 @@ export default function TransactionsPage() {
   return (
     <div className="min-h-screen bg-[#050a14] flex">
       {/* Sidebar */}
-      <div className="w-64 bg-[#0a1628] border-r border-yellow-900/30 flex flex-col">
+      <div className="hidden md:flex md:w-64 bg-[#0a1628] border-r border-yellow-900/30 flex-col">
         <div className="p-6 border-b border-yellow-900/30">
           <h1 className="text-yellow-500 font-bold text-xl">Apex Meridian</h1>
           <p className="text-gray-400 text-sm">Admin Panel</p>
@@ -83,6 +83,16 @@ export default function TransactionsPage() {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
+        {/* Mobile Top Bar */}
+        <div className="md:hidden bg-[#0a1628] border-b border-yellow-900/30 px-4 py-3 flex items-center justify-between">
+          <h1 className="text-yellow-500 font-bold">
+            Transactions
+          </h1>
+          <button onClick={() => router.push('/admin')}
+            className="text-gray-400 text-sm">
+            ← Admin
+          </button>
+        </div>
         {/* Top Bar */}
         <div className="bg-[#0a1628] border-b border-yellow-900/30 px-8 py-4 flex justify-between items-center">
           <h2 className="text-white text-2xl font-bold">All Transactions</h2>
@@ -91,7 +101,7 @@ export default function TransactionsPage() {
 
         <div className="p-8">
           {/* Statistics Cards */}
-          <div className="grid grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
             {[
               { 
                 label: 'Total Deposits', 
@@ -132,13 +142,14 @@ export default function TransactionsPage() {
                 No transactions found
               </div>
             ) : (
-              <table className="w-full text-sm text-gray-300">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm text-gray-300">
                 <thead className="bg-[#050a14] text-gray-400 uppercase text-xs">
                   <tr>
                     <th className="px-4 py-3 text-left">User</th>
                     <th className="px-4 py-3 text-left">Type</th>
                     <th className="px-4 py-3 text-left">Amount</th>
-                    <th className="px-4 py-3 text-left">Description</th>
+                    <th className="px-4 py-3 text-left hidden md:table-cell">Description</th>
                     <th className="px-4 py-3 text-left">Date</th>
                   </tr>
                 </thead>
@@ -164,7 +175,7 @@ export default function TransactionsPage() {
                       <td className="px-4 py-3 font-medium">
                         ${transaction.amount?.toLocaleString()}
                       </td>
-                      <td className="px-4 py-3 text-gray-400 max-w-xs truncate">
+                      <td className="px-4 py-3 text-gray-400 max-w-xs truncate hidden md:table-cell">
                         {transaction.description || 'No description'}
                       </td>
                       <td className="px-4 py-3 text-gray-400">
@@ -174,6 +185,7 @@ export default function TransactionsPage() {
                   ))}
                 </tbody>
               </table>
+            </div>
             )}
           </div>
         </div>

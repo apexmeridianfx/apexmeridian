@@ -75,9 +75,9 @@ export default function AdminPage() {
   const totalAUM = investments.reduce((sum, i) => sum + (i.total_balance || 0), 0)
 
   return (
-    <div className="min-h-screen bg-[#050a14] flex">
+    <div className="min-h-screen bg-[#050a14] flex flex-col md:flex-row">
       {/* Sidebar */}
-      <div className="w-64 bg-[#0a1628] border-r border-yellow-900/30 flex flex-col">
+      <div className="hidden md:flex md:w-64 bg-[#0a1628] border-r border-yellow-900/30 flex-col">
         <div className="p-6 border-b border-yellow-900/30">
           <h1 className="text-yellow-500 font-bold text-xl">Apex Meridian</h1>
           <p className="text-gray-400 text-sm">Admin Panel</p>
@@ -111,15 +111,27 @@ export default function AdminPage() {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
+        {/* Mobile Top Bar */}
+        <div className="md:hidden bg-[#0a1628] border-b border-yellow-900/30 px-4 py-3 flex items-center justify-between">
+          <div>
+            <h1 className="text-yellow-500 font-bold">Apex Meridian</h1>
+            <p className="text-gray-400 text-xs">Admin Panel</p>
+          </div>
+          <button
+            onClick={handleSignOut}
+            className="text-gray-400 text-sm">
+            Sign Out
+          </button>
+        </div>
         {/* Top Bar */}
         <div className="bg-[#0a1628] border-b border-yellow-900/30 px-8 py-4 flex justify-between items-center">
-          <h2 className="text-white text-2xl font-bold">Admin Control Panel</h2>
-          <p className="text-gray-400 text-sm">Apex Meridian Management System</p>
+          <h2 className="text-white text-lg md:text-2xl font-bold">Admin Control Panel</h2>
+          <p className="text-gray-400 text-sm hidden md:block">Apex Meridian Management System</p>
         </div>
 
-        <div className="p-8 space-y-8">
+        <div className="p-8 space-y-8 pb-20 md:pb-0">
           {/* Stat Cards */}
-          <div className="grid grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {[
               { label: 'Total Users', value: users.length, icon: <Users size={24} /> },
               { label: 'Active Investments', value: investments.filter(i => i.status === 'active').length, icon: <Briefcase size={24} /> },
@@ -141,13 +153,44 @@ export default function AdminPage() {
             <div className="px-6 py-4 border-b border-yellow-900/30">
               <h3 className="text-white font-semibold text-lg">Recent Users</h3>
             </div>
-            <table className="w-full text-sm text-gray-300">
-              <thead className="bg-[#050a14] text-gray-400 uppercase text-xs">
-                <tr>
-                  <th className="px-4 py-3 text-left">Name</th>
-                  <th className="px-4 py-3 text-left">Email</th>
-                  <th className="px-4 py-3 text-left">Country</th>
-                  <th className="px-4 py-3 text-left">Joined</th>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm text-gray-300">
+                <thead className="bg-[#050a14] text-gray-400 uppercase text-xs">
+                  <tr>
+                    <th className="px-4 py-3 text-left">Name</th>
+                    <th className="px-4 py-3 text-left">Email</th>
+                    <th className="px-4 py-3 text-left">Country</th>
+                    <th className="px-4 py-3 text-left">Joined</th>
+                    <th className="px-4 py-3 text-left">Status</th>
+                    <th className="px-4 py-3 text-left">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-yellow-900/20">
+                  {users.length === 0 ? (
+                    <tr><td colSpan={6} className="text-center py-8 text-gray-400">No users yet</td></tr>
+                  ) : (
+                    users.map((u) => (
+                      <tr key={u.id} className="hover:bg-yellow-900/10">
+                        <td className="px-4 py-3">{u.full_name || 'N/A'}</td>
+                        <td className="px-4 py-3">{u.email}</td>
+                        <td className="px-4 py-3">{u.country || 'N/A'}</td>
+                        <td className="px-4 py-3">{new Date(u.created_at).toLocaleDateString()}</td>
+                        <td className="px-4 py-3">
+                          <span className="px-2 py-1 bg-green-900/50 text-green-300 rounded text-xs">Active</span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <button
+                            onClick={() => router.push('/admin/users/' + u.id)}
+                            className="text-yellow-500 hover:text-yellow-400 text-sm font-medium">
+                            Manage →
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
                   <th className="px-4 py-3 text-left">Status</th>
                   <th className="px-4 py-3 text-left">Actions</th>
                 </tr>
@@ -184,13 +227,47 @@ export default function AdminPage() {
             <div className="px-6 py-4 border-b border-yellow-900/30">
               <h3 className="text-white font-semibold text-lg">Pending Loan Applications</h3>
             </div>
-            <table className="w-full text-sm text-gray-300">
-              <thead className="bg-[#050a14] text-gray-400 uppercase text-xs">
-                <tr>
-                  <th className="px-4 py-3 text-left">User</th>
-                  <th className="px-4 py-3 text-left">Amount</th>
-                  <th className="px-4 py-3 text-left">Purpose</th>
-                  <th className="px-4 py-3 text-left">Date</th>
+            <div className="overflow-x-auto md:overflow-x-hidden">
+              <table className="w-full text-sm text-gray-300">
+                <thead className="bg-[#050a14] text-gray-400 uppercase text-xs">
+                  <tr>
+                    <th className="px-4 py-3 text-left">User</th>
+                    <th className="px-4 py-3 text-left">Amount</th>
+                    <th className="px-4 py-3 text-left">Purpose</th>
+                    <th className="px-4 py-3 text-left">Date</th>
+                    <th className="px-4 py-3 text-left">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-yellow-900/20">
+                  {loans.filter(l => l.status === 'pending').length === 0 ? (
+                    <tr><td colSpan={5} className="text-center py-8 text-gray-400">No pending loans</td></tr>
+                  ) : (
+                    loans.filter(l => l.status === 'pending').map((loan) => (
+                      <tr key={loan.id} className="hover:bg-yellow-900/10">
+                        <td className="px-4 py-3">{loan.user_id?.slice(0, 8)}...</td>
+                        <td className="px-4 py-3">${loan.amount_requested?.toLocaleString()}</td>
+                        <td className="px-4 py-3">{loan.purpose}</td>
+                        <td className="px-4 py-3">{new Date(loan.created_at).toLocaleDateString()}</td>
+                        <td className="px-4 py-3">
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => approveLoan(loan.id)}
+                              className="px-3 py-1 bg-yellow-600 hover:bg-yellow-500 text-white rounded text-xs">
+                              Approve
+                            </button>
+                            <button
+                              onClick={() => rejectLoan(loan.id)}
+                              className="px-3 py-1 bg-red-700 hover:bg-red-600 text-white rounded text-xs">
+                              Reject
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
                   <th className="px-4 py-3 text-left">Actions</th>
                 </tr>
               </thead>
@@ -225,6 +302,34 @@ export default function AdminPage() {
             </table>
           </div>
         </div>
+      </div>
+
+      {/* Mobile Bottom Navigation */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-[#0a1628] border-t border-yellow-900/30 flex justify-around py-3 z-50">
+        <button 
+          onClick={() => router.push('/admin')}
+          className="flex flex-col items-center gap-1 text-yellow-500 text-xs">
+          <span className="text-lg">📊</span>
+          Overview
+        </button>
+        <button 
+          onClick={() => router.push('/admin/users')}
+          className="flex flex-col items-center gap-1 text-gray-400 text-xs">
+          <span className="text-lg">👥</span>
+          Users
+        </button>
+        <button 
+          onClick={() => router.push('/admin/transactions')}
+          className="flex flex-col items-center gap-1 text-gray-400 text-xs">
+          <span className="text-lg">💰</span>
+          Transactions
+        </button>
+        <button 
+          onClick={handleSignOut}
+          className="flex flex-col items-center gap-1 text-gray-400 text-xs">
+          <span className="text-lg">🚪</span>
+          Sign Out
+        </button>
       </div>
     </div>
   )
