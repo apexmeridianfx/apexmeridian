@@ -7,7 +7,7 @@ const services = [
     icon: TrendingUp,
     title: "Forex Trading & Investment",
     description:
-      "Access managed forex portfolios with competitive returns. Our expert traders leverage advanced algorithms and market insights to grow your investments in the world&apos;s largest financial market.",
+      "Access managed forex portfolios with competitive returns. Our expert traders leverage advanced algorithms and market insights to grow your investments in the world's largest financial market.",
     features: [
       "Professional portfolio management",
       "Real-time market analysis",
@@ -103,7 +103,7 @@ export function Services() {
 
               {/* CTA */}
               <Link
-                href={service.href}
+                href="/register"
                 className="inline-flex items-center gap-2 text-primary font-semibold hover:gap-3 transition-all"
               >
                 Learn More
